@@ -24,20 +24,25 @@ router.get("/getAll", (req,res) => {
    const errors = {};
     item.find()
     .then(items => {
+        if (!items) {
+            errors.noItems = "There are no items";
+            res.status(404).json(errors);
+        }
         res.json(items);
     })
-    .catch(err => res.status(404).json({ noItems:"There are no items"}));
+    .catch(err => res.status(404).json({ noItems:"There are no items" }));
 });
-   //@route PUT content/update
+
+//@route PUT content/update
 //@desc UPDATE some content
 //@access public
-// router.put("/update", (req,res) => {
-// item.updateOne({
-
-//     })
-//     // await will wait for a promise.
-// await item.save();
-// });
+router.put("/update", (req,res) => {
+    item.updateOne({"username": req.body.username},
+    {$set: {"content": req.body.content}})
+    .then(() => 
+        res.send("updated")
+    );
+});
 
 //@route DELETE content/delete
 //@desc DELETE some content
@@ -47,4 +52,5 @@ item.deleteOne({ "username": req.body.username })
 .then(() => 
 res.status(200).send("Successfully deleted"))
 });
+
 module.exports = router;
