@@ -1,12 +1,17 @@
+// import libraries
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const _ = require("lodash");
+
+// set up connection to database
 const mongoose = require("mongoose");
 mongoose.connect('mongodb://localhost:27017/content', { useNewUrlParser: true }
 ).then(
    () => {console.log("Connection Success")}, err => {console.log("naughty developer")}
 );
+
+// expose port 
 const port = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({ extended:false }));
 app.use(bodyParser.json());

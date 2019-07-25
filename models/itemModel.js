@@ -6,8 +6,11 @@ const contentSchema = new Schema ({
        type: String,
        required: true,
        maxlength: 500
+   },
+   email: {
+       type: String,
+       maxlength: 100
    }
 });
 const item = mongoose.model('Content', contentSchema);
-module.exports = contentSchema;
 module.exports = item;
