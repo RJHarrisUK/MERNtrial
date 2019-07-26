@@ -24,9 +24,9 @@ const bcrypt = require("bcryptjs");
                     password: req.body.password,
                     content: req.body.content
                  });
-                 post.save().then(item => res.send("Post created"));
+                 post.save().then(item => res.json({ message:"Post Created" }));
             } else {
-                res.send("Incorrect password");
+                res.json({ message: "Incorrect Password" });
             }
         });
     }
@@ -46,7 +46,7 @@ router.get("/getAll", (req,res) => {
         }
         res.json(items);
     })
-    .catch(err => res.status(404).json({ noItems:"There are no items" }));
+    .catch(err => res.status(404).json(err));
 });
 
 //@route PUT content/update
@@ -66,11 +66,11 @@ if (!user) {
             item.updateOne({"username": req.body.username},
             {$set: {"content": req.body.content}})
             .then(() => 
-                res.send("updated")
+                res.json({ message: "Post Updated" })
             );
 
         } else {
-            res.send("Incorrect password");
+            res.json({ message: "Incorrect Password" });
         }
     });
 }
@@ -92,9 +92,9 @@ if (!user) {
         if (result == true) {
             item.deleteOne({ "username": req.body.username })
             .then(() => 
-            res.status(200).send("Successfully deleted"));
+            res.status(200).json({ message: "Post Deleted" }));
         } else {
-            res.send("Incorrect Password");
+            res.json({ message: "Incorrect Password" });
         }
     });
 }

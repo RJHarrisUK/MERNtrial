@@ -28,8 +28,8 @@ router.post("/registerUser", (req,res) => {
             bcrypt.hash(newUser.password, salt, (err, hash) => {
               if (err) throw err;
               newUser.password = hash;
-              newUser.save().then(user => res.send("New user successfully registered"))
-              .catch(err => res.send("Username and/or e-mail already exists"));
+              newUser.save().then(user => res.json({ message: "New user successfully registered" }))
+              .catch(err => res.json({ message: "Username and/or e-mail already exists" }));
             });
         });
   });
@@ -48,12 +48,12 @@ router.post("/loginUser", (req, res) => {
             if (result == true) {
                 return res.status(400).json({ message: "User successfully logged in" });
             } else {
-                res.send("Incorrect password");
+                res.json({ message: "Incorrect Password" });
             }
         });
     }
 });
-});
+ });
 
 //@route GET all users
 //@desc test to see user logins work
