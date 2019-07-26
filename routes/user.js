@@ -4,42 +4,56 @@ const router = express.Router();
 const newArr = new Array();
 const lodash = require("lodash");
 const user = require("../models/userModel.js");
-
 const validateUserInput = require("../validator/user");
+const bcrypt = require("bcryptjs");
 
 //@route POST create user
 //@desc registers a new user in database
 //@access public
 router.post("/registerUser", (req,res) => {
     const { errors, isValid } = validateUserInput(req.body);
+// check input is correct via validator
     if (!isValid) {
         return res.status(400).json(errors);
       }
-    const newUser = new user ({
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password,
-        password2: req.body.password2
-     });
-    // Save returns a promise
-    newUser.save().then(() => res.send('User successfully registered'));
-    });
+// check for duplicate existing usernames/emails 
+        const newUser = new user ({
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password,
+            password2: req.body.password2
+        });
+// hash the password
+        bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(newUser.password, salt, (err, hash) => {
+              if (err) throw err;
+              newUser.password = hash;
+              newUser.save().then(user => res.send("New user successfully registered"))
+              .catch(err => res.send("Username and/or e-mail already exists"));
+            });
+        });
+  });
 
 //@route GET user
 //@desc login a specific user
 //@access public
 router.post("/loginUser", (req, res) => {
-    const errors = {};
-    user.findOne({ username: req.body.username, password: req.body.password })
-    .then(user => {
-        if (user) {
-        return res.status(400).json({ email: "User successfully logged in" });
-        } else {
-        errors.noUsers = "Please enter correct credentials";
-        res.status(404).json(errors);}
-    });
-});
 
+    user.findOne({ username: req.body.username, email: req.body.email })
+    .then(user => {
+    if (!user) {
+        return res.status(400).json({ message: "No such user exists" });
+    } else {
+        bcrypt.compare(req.body.password, user.password, function (err, result) {
+            if (result == true) {
+                return res.status(400).json({ message: "User successfully logged in" });
+            } else {
+                res.send("Incorrect password");
+            }
+        });
+    }
+});
+});
 
 //@route GET all users
 //@desc test to see user logins work
