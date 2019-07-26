@@ -11,5 +11,7 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({ extended:false }));
 app.use(bodyParser.json());
 const item = require("./routes/item.js");
+const user = require("./routes/user.js");
 app.use("/item", item);
+app.use("/user", user);
 app.listen(port, () => console.log('server running on port 5000'));
